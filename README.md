@@ -7,3 +7,6 @@ Python scripts to simulate Gaggia boiler behavior and plot profiles
  - pandas
  - odfpy
  - openpyxl
+
+## Resources
+ - data.zip folder: extract, so that data is available in 'data/...'
