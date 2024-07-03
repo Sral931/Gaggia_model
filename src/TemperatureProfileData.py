@@ -1,19 +1,18 @@
+"""file to plot temperature profiles and simulate"""
+# import requirements
 import numpy as np
-from json import load
 import matplotlib.pyplot as plt
 
-from ProfileDataFunctions import *
+# import own "modules"
+from functions_data import *
+from functions_plotting import *
 
+# import data types
 from numpy import int32, float64, ndarray
 
-#################
-# funtion block #
-#################
-# most moved to ProfileDataFunctions
-
-########
-# init #
-########
+###########
+# DEFINES #
+###########
 temp_off:float64 = 10.0
 temp_tank:float64 = 20.0
 temp_ambient:float64 = 20.0
@@ -203,6 +202,9 @@ for index in range(1,time_points):
         + (temp_ambient - temp_plate[index-1])/res_plate_ambient
     )*time_step[index]/cap_plate
 
+########
+# PLOT #
+########
 # plot dataset temperatures
 plot_temperature_data(dataset, title, temp_off=temp_off)
 # plt.plot(timescale, time_step, ':', color='black')
