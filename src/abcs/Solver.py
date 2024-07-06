@@ -15,8 +15,8 @@ class Solver():
         self.logging = True
 
         self.model = Model()
-    
-    def initialize(self, init_state:ndarray, init_input:ndarray) -> None:
+
+    def initialize(self, init_time:float64, init_state:ndarray, init_input:ndarray) -> None:
         # input check
         if np.shape(init_state)[0] != self.model.num_states:
             raise ValueError(f'Expected init_state of length {self.model.num_states:3d}, got: {np.shape(init_state)[0]:3d}')
@@ -25,8 +25,9 @@ class Solver():
         
         # main
         self.state: ndarray = init_state
-        self.log: ndarray = np.zeros((1,self.model.num_states+self.model.num_inputs))
-        self.log[0, :self.model.num_states] = init_state
+        self.log: ndarray = np.zeros((1,1+self.model.num_states+self.model.num_inputs))
+        self.log[0, 0] = init_time
+        self.log[0, 1:1+self.model.num_states] = init_state
         self.log[0,-self.model.num_inputs:] = init_input
 
     def solve(self, inputs: ndarray, timestep: float64) -> None:

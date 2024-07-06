@@ -14,6 +14,7 @@ if __name__ == '__main__':
     solver = Solver_Newton()
     solver.model = Model_TomBrazier()
     solver.initialize(
+        0.0,
         np.array([20.0]*6),
         np.array([1350.0])
     )
@@ -32,9 +33,9 @@ if __name__ == '__main__':
 
     timescale: ndarray = np.linspace(time_start ,time_end, time_steps+1)
     for index in range(solver.model.num_states):
-        plt.plot(timescale, solver.log[:,index], label=solver.model.LIST_STATES[index])
+        plt.plot(solver.log[:,0], solver.log[:,1+index], label=solver.model.LIST_STATES[index])
     for index in range(solver.model.num_inputs):
-        plt.plot(timescale, solver.log[:,solver.model.num_states+index], label=solver.model.LIST_INPUTS[index])
+        plt.plot(solver.log[:,0], solver.log[:,1+solver.model.num_states+index], label=solver.model.LIST_INPUTS[index])
     plt.ylim(0,180)
     plt.grid(True)
     plt.legend()

@@ -15,5 +15,5 @@ class Model():
         self.num_states: int32 = len(self.LIST_STATES)
         self.num_inputs: int32 = len(self.LIST_INPUTS)
 
-    def jacobi(self) -> ndarray:
+    def jacobi(self, state:ndarray) -> ndarray:
         raise NotImplementedError("jacobi() function not properly implemented !")

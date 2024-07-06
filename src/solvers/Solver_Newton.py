@@ -24,6 +24,14 @@ class Solver_Newton(Solver):
             raise ValueError('Incorrect length of inputs-array !')
         
         # main
-        self.state += np.matmul(self.model.jacobi(np.append(self.state, inputs)), np.append(self.state, inputs)) * timestep
+        self.state += np.matmul(
+            self.model.jacobi(np.append(self.state, inputs)), 
+            np.append(self.state, inputs)
+        ) * timestep
+
+        # log
         if self.logging:
-            self.log = np.append(self.log, [np.append(self.state, inputs)], axis=0)
+            self.log = np.append(self.log, [np.zeros(1+self.model.num_states+self.model.num_inputs)], axis=0)
+            self.log[-1,0] = self.log[-2,0] + timestep
+            self.log[-1,1:self.model.num_states+1] = self.state
+            self.log[-1,-self.model.num_inputs:] = inputs
