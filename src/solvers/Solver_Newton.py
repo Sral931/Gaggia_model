@@ -9,7 +9,9 @@ from abcs.Solver import Solver
 from numpy import int32, float64, ndarray
 
 class Solver_Newton(Solver):
-    # model Property
+    # properties
+    NAME: str = "Newton Solver"
+    # model Property from abc
     
     def __init__(self, logging: bool = True):
         super().__init__(logging)

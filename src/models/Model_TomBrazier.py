@@ -9,7 +9,8 @@ from abcs.Model import Model
 from numpy import int32, float64, ndarray
 
 class Model_TomBrazier(Model):
-
+    # properties
+    NAME: str = "TomBrazierModel"
     LIST_STATES: list = [
         'element',
         'plain',
@@ -18,7 +19,6 @@ class Model_TomBrazier(Model):
         'body',
         'ambient'
     ]
-
     LIST_INPUTS: list = [
         'heater'
     ]
@@ -38,7 +38,7 @@ class Model_TomBrazier(Model):
                 [0.0, 0.0,  0.0,      0.0,     0.0,     0.55, 0.0],
                 [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0],
                 [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0],
-                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0]
             ])
             # symmetric part
             self._heat_conduction += self._heat_conduction.T

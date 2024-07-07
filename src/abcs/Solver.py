@@ -9,6 +9,9 @@ from abcs.Model import Model
 from numpy import int32, float64, ndarray
 
 class Solver():
+
+    NAME: str = "ABC Solver"
+
     def __init__(self, logging: bool = True):
 
         # set contruct params

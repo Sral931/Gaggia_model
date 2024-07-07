@@ -9,7 +9,9 @@ from abcs.Solver import Solver
 from numpy import int32, float64, ndarray
 
 class Solver_RK4(Solver):
-    # model Property
+    # properties
+    NAME: str = "RK4 Solver"
+    # model Property from abc
     
     def __init__(self, logging: bool = True):
         super().__init__(logging)
@@ -25,16 +27,15 @@ class Solver_RK4(Solver):
         
         # init
         self.update_aux_states(timestep, inputs)
-        unitary_mod: ndarray = np.diag(np.ones(self.model.num_states+self.model.num_inputs))
+        unitary: ndarray = np.diag(np.ones(self.model.num_states+self.model.num_inputs))
 
         # print(unitary_mod)
 
         # main
         k1:ndarray = self.model.jacobi(self.state[1:])
-        # print(k1)
-        k2:ndarray = k1 @ (unitary_mod + k1 * 0.5 * timestep)
-        k3:ndarray = k2 @ (unitary_mod + k1 * 0.5 * timestep)
-        k4:ndarray = k1 @ k3 * timestep
+        k2:ndarray = k1 @ (unitary + k1 * 0.5 * timestep)
+        k3:ndarray = k1 @ (unitary + k2 * 0.5 * timestep)
+        k4:ndarray = k1 @ (unitary + k3 * timestep)
         self.state[1:] += (k1 + 2.0*k2 + 2.0*k3 + k4) @ self.state[1:] * timestep / 6.0
         
         # log

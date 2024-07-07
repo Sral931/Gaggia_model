@@ -6,7 +6,8 @@ import numpy as np
 from numpy import int32, float64, ndarray
 
 class Model():
-
+    # properties
+    NAME: str = "ABC Model"
     LIST_STATES: list = []
     LIST_INPUTS: list = []
 
