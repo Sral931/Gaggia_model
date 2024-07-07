@@ -1,4 +1,4 @@
-"""abstract base class for solvers"""
+"""Runge Kutta O4 Solver class"""
 # import requirements
 import numpy as np
 

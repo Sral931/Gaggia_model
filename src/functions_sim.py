@@ -7,13 +7,15 @@ import matplotlib.pyplot as plt
 from models.Model_TomBrazier import *
 from solvers.Solver_Newton import *
 from solvers.Solver_RK4 import *
+from solvers.Solver_Copper import *
 
 # import data types
 from numpy import int32, float64, ndarray
 
 if __name__ == '__main__':
-    solver = Solver_Newton()
+    # solver = Solver_Newton()
     # solver = Solver_RK4()
+    solver = Solver_Copper()
     solver.model = Model_TomBrazier()
     solver.initialize(
         0.0,

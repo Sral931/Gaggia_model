@@ -1,4 +1,4 @@
-"""abstract base class for solvers"""
+"""Newton Solver Class"""
 # import requirements
 import numpy as np
 
