@@ -8,7 +8,7 @@ from abcs.Solver import Solver
 # import data types
 from numpy import int32, float64, ndarray
 
-class Solver_Newton(Solver):
+class Solver_RK4(Solver):
     # model Property
     
     def __init__(self, logging: bool = True):
@@ -22,11 +22,20 @@ class Solver_Newton(Solver):
             raise Exception('System needs to be initialized first !')
         if np.shape(inputs)[0] != self.model.num_inputs:
             raise ValueError('Incorrect length of inputs-array !')
+        
         # init
         self.update_aux_states(timestep, inputs)
+        unitary_mod: ndarray = np.diag(np.ones(self.model.num_states+self.model.num_inputs))
+
+        # print(unitary_mod)
 
         # main
-        self.state[1:] += ( self.model.jacobi(self.state[1:]) @ self.state[1:] ) * timestep
-
+        k1:ndarray = self.model.jacobi(self.state[1:])
+        # print(k1)
+        k2:ndarray = k1 @ (unitary_mod + k1 * 0.5 * timestep)
+        k3:ndarray = k2 @ (unitary_mod + k1 * 0.5 * timestep)
+        k4:ndarray = k1 @ k3 * timestep
+        self.state[1:] += (k1 + 2.0*k2 + 2.0*k3 + k4) @ self.state[1:] * timestep / 6.0
+        
         # log
         self.update_log()
