@@ -22,9 +22,9 @@ class Solver():
     def initialize(self, init_time:float64, init_state:ndarray, init_inputs:ndarray) -> None:
         # input check
         if np.shape(init_state)[0] != self.model.num_states:
-            raise ValueError(f'Expected init_state of length {self.model.num_states:3d}, got: {np.shape(init_state)[0]:3d}')
+            raise ValueError(f'Expected init_state of length {self.model.num_states:3d}, got: {np.shape(init_state)}')
         if np.shape(init_inputs)[0] != self.model.num_inputs:
-            raise ValueError(f'Expected init_state of length {self.model.num_states:3d}, got: {np.shape(init_state)[0]:3d}')
+            raise ValueError(f'Expected init_inputs of length {self.model.num_inputs:3d}, got: {np.shape(init_inputs)}')
         
         # main
         self.init_state = np.concatenate(([init_time], init_state, init_inputs))
