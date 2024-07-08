@@ -14,13 +14,15 @@ class Model_TomBrazier(Model):
     LIST_STATES: list = [
         'element',
         'plain',
+        'sensor',
         'water',
         'group',
         'body',
         'ambient'
     ]
     LIST_INPUTS: list = [
-        'heater'
+        'heater',
+        'flow'
     ]
 
     def __init__(self) -> None:
@@ -32,13 +34,15 @@ class Model_TomBrazier(Model):
         if not hasattr(self, '_heat_conduction'):
             # upper heat conduction
             self._heat_conduction : ndarray = np.array([
-                [0.0, 14.0, 14.7/2.0, 3.6/2.0, 1.8/2.0, 0.0 , 1.0],
-                [0.0, 0.0,  14.7/2.0, 3.6/2.0, 1.8/2.0, 0.0 , 0.0],
-                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0],
-                [0.0, 0.0,  0.0,      0.0,     0.0,     0.55, 0.0],
-                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0],
-                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0],
-                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0 , 0.0]
+                [0.0, 14.0, 14.7/2.0, 2.4e-3 , 3.6/2.0, 1.8/2.0, 0.0 , 1.0, 0.0],
+                [0.0, 0.0,  14.7/2.0, 0.0,     3.6/2.0, 1.8/2.0, 0.0 , 0.0, 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0,     0.0 , 0.0, 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0,     0.0 , 0.0, 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0,     0.55, 0.0, 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0,     0.0 , 0.0, 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0,     0.0 , 0.0, 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0,     0.0 , 0.0, 0.0],
+                [0.0, 0.0,  0.0,      0.0,     0.0,     0.0,     0.0 , 0.0, 0.0]
             ])
             # symmetric part
             self._heat_conduction += self._heat_conduction.T
@@ -53,7 +57,7 @@ class Model_TomBrazier(Model):
 
         # build inverse capacities
         if not hasattr(self,'_inv_caps'):
-            self._inv_caps = np.array([2.0/549.0, 2.0/549.0, 1.0/422.0, 1.0/616.0, 1.0/395.0, 0.0, 0.0])
+            self._inv_caps = np.array([2.0/549.0, 2.0/549.0, 1.0/20e-3, 1.0/422.0, 1.0/616.0, 1.0/395.0, 0.0, 0.0])
         
         # out
         return np.multiply(heat_conduction, self._inv_caps[:,None])
