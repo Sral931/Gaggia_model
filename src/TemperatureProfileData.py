@@ -59,6 +59,8 @@ if index_dataset in index_list_heaterdata:
 
 solver = Solver_RK4()
 model = Model_Sral()
+np.set_printoptions(precision=1, suppress=True)
+model.jacobi(np.zeros(model.num_states+model.num_inputs))
 solver.model = model
 
 init_state: ndarray = np.ones(model.num_states)*temp_start
@@ -75,7 +77,7 @@ solver.initialize(
 # main #
 ########
 for index in range(1,time_points):
-    brew_delta: float64 = (500.0 + solver.state[model.STATE_INDEXES['water']] - temp_tank)*flow[index]/100.0
+    brew_delta: float64 = (500.0 + temp_set[index] - temp_off - temp_tank)*flow[index]/100.0
 
     if index_dataset not in index_list_heaterdata:
         heater[index] = (
