@@ -2,12 +2,10 @@
 # import requirements
 import numpy as np
 import matplotlib.pyplot as plt
-# import requirements
-import numpy as np
-import matplotlib.pyplot as plt
 
 # import own modules
 from models.Model_TomBrazier import *
+from models.Model_Sral import *
 from solvers.Solver_Newton import *
 from solvers.Solver_RK4 import *
 from solvers.Solver_Copper import *
@@ -26,17 +24,18 @@ temp_tank:float64 = 20.0
 temp_ambient:float64 = 20.0
 FULL_HEATER_POWER: float64 = 1300
 
-index_dataset = 4
+index_dataset = 1
 dataset, title = load_dataset(index_dataset, temp_off)
 print(f'{index_dataset:2d} {title:20s}')
 # 1 - heat up
 # 2 - idle 7min after start
 # 3 - temperature with flow
-# 4 - heat up group before mod
-# 5 - heat up group after mod
-# 6 - BoilerSideCurves
-# 7 - temperature sensor group head
+# 4 - temperature with high flow
+# 5 - heat up group before mod
+# 6 - heat up group after mod
+# 7 - BoilerSideCurves
 # 8 - boiler side vs brew
+# 9 - temperature sensor group head
 
 # timescale
 time_min:float64 = dataset[0][0]
@@ -54,12 +53,12 @@ temp_exp:ndarray = dataset[column_indexes['temperature']] + temp_off
 
 heater:ndarray = np.zeros(time_points)
 
-index_list_heaterdata = [4,5,6,8]
+index_list_heaterdata = [5,6,7,8]
 if index_dataset in index_list_heaterdata:
     heater = dataset[column_num+0]
 
 solver = Solver_RK4()
-model = Model_TomBrazier()
+model = Model_Sral()
 solver.model = model
 
 init_state: ndarray = np.ones(model.num_states)*temp_start
@@ -102,18 +101,15 @@ plot_temperature_data(dataset, title, temp_off=temp_off)
 # plt.plot(timescale, time_step, ':', color='black')
 
 # plot extra temperature data for certain datasets
-if index_dataset == 6:
-    plt.plot(timescale, dataset[column_num+1], '-', label='bottom')
-    plt.plot(timescale, dataset[column_num+2], '-', label='top')
-if index_dataset == 8:
+if index_dataset in [7, 8]:
     plt.plot(timescale, dataset[column_num+1], '-', label='bottom')
     plt.plot(timescale, dataset[column_num+2], '-', label='top')
 
 # add simulated curves to plot
 # plt.figure(1)
 plt.plot(solver.log[:,0], solver.log[:,1:-model.num_inputs], '--', label=model.LIST_STATES)
-plt.plot(solver.log[:,0], solver.log[:,model.INPUT_INDEXES['heater']]/100, '--', label='heater/100')
-plt.plot(solver.log[:,0], solver.log[:,model.INPUT_INDEXES['flow']]*10, '--', label='flow*10')
+plt.plot(solver.log[:,0], solver.log[:,model.INPUT_INDEXES['heater']]/100, ':', label='heater/100')
+plt.plot(solver.log[:,0], solver.log[:,model.INPUT_INDEXES['flow']]*10, ':', label='flow*10')
 
 ylims = plt.ylim()
 if ylims[0]< 0:

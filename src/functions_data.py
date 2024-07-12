@@ -250,7 +250,7 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
         correct_temperature(dataset, temp_off) # temp reading above set
         dataset[column_indexes['pumpFlow']] = 0.0 # erase pumpFlow
         return dataset, 'idle 7min after start'
-
+    
     # heat up with flow
     if (index_dataset == 3):
         dataset1, title = load_file(path_data_folder+'shot-data-58.json')
@@ -267,8 +267,24 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
         dataset = np.append(dataset1, dataset2, axis=1)
         return dataset, 'temperature with flow'
     
-    # brew head heat profile
+    # heat up with high flow
     if (index_dataset == 4):
+        dataset1, title = load_file(path_data_folder+'shot-data-83.json')
+        # corr certain values for combination
+        dataset1[column_indexes['pumpFlow']][-1] = 0.0
+        correct_temperature(dataset1, temp_off)
+        dataset1[column_indexes['targetTemperature']][-1] = 1.0
+        dataset2, title = load_file(path_data_folder+'shot-data-84.json')
+        # corr certain values for combination
+        dataset2[0] += 35.0 # time
+        dataset2[column_indexes['pumpFlow']][0:10] = 0.0 # pumpFlow at start
+        correct_temperature(dataset2, temp_off) # temperature reading above set
+        # combine
+        dataset = np.append(dataset1, dataset2, axis=1)
+        return dataset, 'temperature with strong flow'
+    
+    # brew head heat profile
+    if (index_dataset == 5):
         dataset, title = load_file(path_data_folder+'BeforeBrewHead.csv')
         timescale_interp = np.linspace(0, np.floor((dataset[0][-1]-dataset[0][0])*10)/10.0, int(np.floor((dataset[0][-1]-dataset[0][0])*10)))
         dataset_interp = [ 
@@ -287,7 +303,7 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
         return dataset, 'heat up group before mod'
     
     # brew head heat profile
-    if (index_dataset == 5):
+    if (index_dataset == 6):
         dataset, title = load_file(path_data_folder+'AfterBrewHead.csv')
         timescale_interp = np.linspace(0, np.floor((dataset[0][-1]-dataset[0][0])*10)/10.0, int(np.floor((dataset[0][-1]-dataset[0][0])*10)))
         dataset_interp = [ 
@@ -306,7 +322,7 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
         return dataset, 'heat up group after mod'
     
     # temp sensors file front face
-    if (index_dataset == 6):
+    if (index_dataset == 7):
         pandas_excel = pd.read_excel(path_data_folder+'Probe-points.ods', engine='odf')
         pandas_dataset = pandas_excel.to_numpy().transpose()
         column_translation_list = [0, column_num+0, column_num+1, column_num+2, 4] # time, heater, bottom, top, middle
@@ -317,22 +333,6 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
             dataset[column_translation_list[index_column]] = pandas_dataset[index_column]
         dataset[column_indexes['temperature']] -= temp_off # corr temp reading
         return dataset, 'BoilerSideCurves'
-    
-    # temp sensors group head
-    if (index_dataset == 7):
-        pandas_excel = pd.read_excel(path_data_folder+'Grouphead_Temperatures.xlsx')
-        # print(pandas_excel.info())
-        pandas_dataset = pandas_excel.to_numpy().transpose()[:2]
-        column_translation_list = [0, 4] # time, grouphead temperature
-        num_points = len(pandas_dataset[0])
-        dataset = np.zeros((column_num,num_points))
-        # translate column indexes
-        for index_column in range(len(pandas_dataset)):
-            dataset[column_translation_list[index_column]] = pandas_dataset[index_column]
-        dataset[column_indexes['temperature']] -= temp_off # corr temp reading
-        dataset[column_indexes['targetTemperature']] = np.where(dataset[0] < 980, 90.0, 93.0)
-        dataset[column_indexes['pumpFlow']] = np.where((1690 < dataset[0]) & (dataset[0] < 1696), 8.0, 0.0)
-        return dataset, 'temp sensor grouphead'
     
     # temp sensors file front face vs brew
     if (index_dataset == 8):
@@ -366,6 +366,37 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
         )
         dataset[column_indexes['temperature']] -= temp_off # corr temp reading
         return dataset, 'BoilerSideCurves vs brew'
+    
+    # temp sensors group head
+    if (index_dataset == 9):
+        pandas_excel = pd.read_excel(path_data_folder+'Grouphead_Temperatures.xlsx')
+        # print(pandas_excel.info())
+        pandas_dataset = pandas_excel.to_numpy().transpose()[:2]
+        column_translation_list = [0, 4] # time, grouphead temperature
+        num_points = len(pandas_dataset[0])
+        dataset = np.zeros((column_num,num_points))
+        # translate column indexes
+        for index_column in range(len(pandas_dataset)):
+            dataset[column_translation_list[index_column]] = pandas_dataset[index_column]
+        dataset[column_indexes['temperature']] -= temp_off # corr temp reading
+        dataset[column_indexes['targetTemperature']] = np.where(dataset[0] < 980, 90.0, 93.0)
+        dataset[column_indexes['pumpFlow']] = np.where((1690 < dataset[0]) & (dataset[0] < 1697), 8.0, 0.0)
+        dataset[column_indexes['pumpFlow']] += np.where((1707 < dataset[0]) & (dataset[0] < 1732), 2.0, 0.0)
+        return dataset, 'temp sensor grouphead'
+    
+    # heat up profile
+    if (index_dataset == 10):
+        dataset, title = load_file(path_data_folder+'shot-data-98.json')
+        # corr certain values
+        correct_temperature(dataset, temp_off) # temp reading above set
+        return dataset, 'heat up 2'
+    
+    # heat up profile
+    if (index_dataset == 11):
+        dataset, title = load_file(path_data_folder+'shot-data-112.json')
+        # corr certain values
+        correct_temperature(dataset, temp_off) # temp reading above set
+        return dataset, 'heat up pressurized'
     
     raise NotImplementedError(f'Dataset index {index_dataset:2d} is not defined !')
 
