@@ -222,7 +222,7 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
     
     # custom flow profile
     if (index_dataset == 0):
-        period = 30
+        period = 60
         time_start: float64 = -100.0
         time_end: float64 = 240.0
         num_points = int((time_end-time_start)*10)
