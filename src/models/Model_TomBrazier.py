@@ -9,6 +9,10 @@ from abcs.Model import Model
 from numpy import int32, float64, ndarray
 
 class Model_TomBrazier(Model):
+    """
+    Model recreating Tom Brazier's results
+    taken from: http://tomblog.firstsolo.net/index.php/solved-temperature-control/
+    """
     # properties
     NAME: str = "TomBrazierModel"
     LIST_STATES: list = [
