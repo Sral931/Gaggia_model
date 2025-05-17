@@ -13,11 +13,24 @@ res_boiler: float64 = 1.0/20.0 # (W / K)^-1
 res_boiler_group: float64 = 1.0/0.1 # (W / K)^-1
 res_boiler_water: float64 = 1.0/20.0 # (W / K)^-1
 res_boiler_ambient: float64 = 1/0.75
+
 # internal resistance
 # cast alu has about 90 W/m/K
 # 2 * 400mm * 10mm cross section over half boiler width (15mm)
 # (2 sides for 400mm of heater length with 10mm wall thickness)
 # gives 48 W/K total
+
+# boiler to group resistance
+# smooth brass on brass (~100 W / cm^2 / K) for the boiler to group
+# boiler to group area is about 80mm OD to 40mm ID
+# agrees well with Tom's Model:
+# there adding thermal paste increased conductivity by a few 0.1 W/K,
+# where no paste vs paste typically increases conductivity severalfold => no paste ~ 0.1 W/K
+
+# boiler to water
+# roughly from Tom's Model
+# agrees well with the specific surface heat conductivity in a tube of ID 40mm
+
 # ambient: total boiler loss ~ 60W
 # 20W for insulated, 60W with some discord guy's kill-watt-measurement after 15 min
 # total res to ambient ~ 0.75 W/K (60W/80K, set100C is 80C over ambient)
