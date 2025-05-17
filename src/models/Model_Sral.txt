@@ -1,0 +1,51 @@
+# Explanation to rough parameter calculation
+
+# machine params
+cap_heater:float64 = 80.0 # J / K
+res_heater_ambient:float64 = 1.0/0.02 # (W / K)^-1
+res_heater_boiler:float64 = 1.0/40 # (W / K)^-1
+# ambient transfer calculated by approx geometry
+# total heater surface is about 400mm length and 10mm width
+# approx alpha is 10 W / m^2 / K divided by 2 for way through chamber
+
+cap_boiler: float64 = 500.0 # J / K
+res_boiler: float64 = 1.0/20.0 # (W / K)^-1
+res_boiler_group: float64 = 1.0/0.1 # (W / K)^-1
+res_boiler_water: float64 = 1.0/20.0 # (W / K)^-1
+res_boiler_ambient: float64 = 1/0.75
+# internal resistance
+# cast alu has about 90 W/m/K
+# 2 * 400mm * 10mm cross section over half boiler width (15mm)
+# (2 sides for 400mm of heater length with 10mm wall thickness)
+# gives 48 W/K total
+# ambient: total boiler loss ~ 60W
+# 20W for insulated, 60W with some discord guy's kill-watt-measurement after 15 min
+# total res to ambient ~ 0.75 W/K (60W/80K, set100C is 80C over ambient)
+# group head loses ~33W by itself
+# boiler res to ambient is double the total (half the total heat)
+
+cap_sensor = 20e-3 # in J / K, about 0,05 gram of brass
+res_sensor = 1/4/(2.4e-3) # in (W/K)^-1
+# smooth brass on brass (~100 W / cm^2 / K)
+# area of M4 about 4*3mm*2mm
+# gives 2.4mW/K
+
+cap_group: float64 = 500 # J / K #might be 420 without portafilter
+res_group_water:float64 = 6.0*res_boiler_water
+res_group_plate:float64 = 1.0/3.6 # (W/K)^-1
+res_group_ambient: float64 = 1.0/0.2 # (W / K)^-1
+
+cap_plate: float64 = 400 # J/K
+res_plate_ambient: float64 = 1.0/0.4 # (W/K)^-1
+
+cap_housing: float64 = 800 # J / K, equal to 2kg stainless steel
+res_boiler_housing:float64 = 1.0/0.4 # (W/K)^-1
+res_housing_ambient:float64 = 1.0/1.2 # (W/K)^-1
+# resistance:
+# surface of the boiler ~4*54mm*80mm +54mm*54mm @ 20W/m^2/K
+# housing surface is much higher and is irrelevant
+# to ambient:
+# 6*200mm*200m (cube) @ 5 W/m^2/K
+
+cap_water: float64 = 420 # J / K
+cp_water: float64 = 4.196 # J / g / K
