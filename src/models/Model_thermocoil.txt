@@ -11,8 +11,8 @@
 ##########
 # sensor #
 ##########
-# thermal capacity ~ 20e-3 J/kg
-# thermal transfer ~ 4.8e-3 W/kg
+# thermal capacity ~ 20e-3 J/K
+# thermal transfer ~ 4.8e-3 W/K
 # equates to about an m4 screw of brass
 # and its metal to metal contact to the boiler
 # worked well in gaggia model

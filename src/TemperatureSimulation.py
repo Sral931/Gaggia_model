@@ -41,7 +41,7 @@ heater:ndarray = np.zeros(time_points)
 solver = Solver_RK4()
 model = Model_Thermocoil(1)
 # print (np.where(model._heat_conduction > 0, 1, 0))
-print (model._heat_conduction)
+# print (model._heat_conduction)
 solver.model = model
 
 init_state: ndarray = np.ones(model.num_states)*temp_start
@@ -73,6 +73,8 @@ for index in range(1,time_points):
 # PLOT #
 ########
 plt.figure(1)
+plt.ylabel("data [°C, W/100, g/s*10]")
+plt.xlabel("Time [s]")
 plt.plot(solver.log[:,0], solver.log[:,1:-model.num_inputs], '--', label=model.LIST_STATES)
 plt.plot(solver.log[:,0], solver.log[:,model.INPUT_INDEXES['heater']]/100, ':', label='heater/100')
 plt.plot(solver.log[:,0], solver.log[:,model.INPUT_INDEXES['flow']]*10, ':', label='flow*10')
