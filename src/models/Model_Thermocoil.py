@@ -50,21 +50,22 @@ class Model_Thermocoil(Model):
         ###################
         # heat conduction #
         ###################
+        # heater to wall and wall to tube on diagonal elements
         #      he1   wl1   tu1   wa1 
         h_base: ndarray = np.array([
             [  0.0, 10.0,  0.0,  0.0],
             [  0.0,  0.0,300.0,  0.0],
-            [  0.0,  0.0,  0.0,350.0],
+            [  0.0,  0.0,  0.0,  0.0],
             [  0.0,  0.0,  0.0,  0.0]
         ])
-
+        # along the wall on off-diagonal elements
         h_transfer: ndarray = np.array([
             [  0.0,  0.0,  0.0,  0.0],
             [  0.0,  2.7,  0.0,  0.0],
             [  0.0,  0.0,  2.7,  0.0],
             [  0.0,  0.0,  0.0,  0.0]
         ])
-
+        # heater input
         h_input: ndarray = np.array([
             1.0, 0.0, 0.0, 0.0
         ])
@@ -87,19 +88,23 @@ class Model_Thermocoil(Model):
             self._heat_conduction[i*4 + 1, -3] = 0.25/num
             self._heat_conduction[i*4 + 2, -3] = 0.25/num
 
-        # symmetric part
-        self._heat_conduction += self._heat_conduction.T
+        self._heat_conduction = self.make_symmetric(self._heat_conduction)
 
-        # add diagonal, but correct for inputs
-        self._heat_conduction -= np.diag(
-            np.sum(self._heat_conduction, axis=1)
-            - np.sum(self._heat_conduction[-self.num_inputs:], axis=0)
-        )
+        ####################
+        # tube2wall matrix #
+        ####################
+        self._tube_conduction: ndarray = np.zeros_like(self._heat_conduction)
+        
+        for i in range(self.num):
+            # tube(2) to water (3)
+            self._tube_conduction[4*i+2, 4*i+3] = 350.0/num
+        
+        self._tube_conduction = self.make_symmetric(self._tube_conduction)
 
         ###############
         # flow matrix #
         ###############
-        self._flow_conduction: np.ndarray = np.zeros_like(self._heat_conduction)
+        self._flow_conduction: ndarray = np.zeros_like(self._heat_conduction)
         #      he1   wl1   tu1   wa1 
         h_flow: ndarray = np.array([
             [  0.0,  0.0,  0.0,  0.0],
@@ -111,22 +116,10 @@ class Model_Thermocoil(Model):
         # put flow mask on off diagonal
         for i in range(num-1):
             self._flow_conduction[4*i:4*i+4, 4*(i+1):4*(i+1)+4] = h_flow
-        # put flow to ambient
+        # put flow to ambient on first water element
         self._flow_conduction[4*num+1, 3] = 1.0
         
-        # symmetric part
-        self._flow_conduction += self._flow_conduction.T
-
-        # add diagonal, but correct for inputs
-        self._flow_conduction -= np.diag(
-            np.sum(self._flow_conduction, axis=1)
-            - np.sum(self._flow_conduction[-self.num_inputs:], axis=0)
-        )
-
-        # flow mask for tube-film
-        self._flow_mask: ndarray = np.zeros_like(self._inv_caps)
-        for i in range(num):
-            self._flow_mask[4*i+3] = 1.0
+        self._flow_conduction = self.make_symmetric(self._flow_conduction)
     
     def jacobi(self, state:ndarray) -> ndarray:
         # build final heat conduction matrix
@@ -141,9 +134,9 @@ class Model_Thermocoil(Model):
         for i in range(self.num):
             # reynolds = rho*c*d/mu, rho and d equate to 1
             # 1/mu is roughly linear with temperature
-            Re: ndarray = c*1e3 * 3.0/80.0*(state[4*i]+6.7)
+            Re: ndarray = c*1e3 * 3.0/80.0*(state[4*i+3]+6.7)
             # prandtl = c_p*mu/lambda
-            Pr = 4.196*80.0/3.0/(state[4*i]+6.7)/0.7
+            Pr = 4.196*80.0/3.0/(state[4*i+3]+6.7)/0.7
             # nusselt
             Nu_lam = 0.15 * Re**0.33 * Pr**0.43
             # turbulent:
@@ -155,10 +148,11 @@ class Model_Thermocoil(Model):
             else:
                 Nu = (2900 - Re)/600*Nu_lam + (Re - 2300)/600*Nu_turb
 
-            heat_conduction[4*i] *= Nu
+            heat_conduction[4*i:4*i+4] += Nu*self._tube_conduction[4*i:4*i+4]
         
         # add water flow
         heat_conduction += self._flow_conduction*h_flow
         
+        # print(np.array2string(np.multiply(heat_conduction, self._inv_caps[:,None]), formatter={'float_kind':lambda x: "%.1f" % x}))
         # out
         return np.multiply(heat_conduction, self._inv_caps[:,None])

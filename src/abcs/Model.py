@@ -20,3 +20,16 @@ class Model():
 
     def jacobi(self, state:ndarray) -> ndarray:
         raise NotImplementedError("jacobi() function not properly implemented !")
+    
+    def make_symmetric(self, matrix: ndarray) -> ndarray:
+        # symmetric part
+        matrix += matrix.T
+
+        # add diagonal, but correct for inputs
+        matrix -= np.diag(
+            np.sum(matrix, axis=1)
+            - np.sum(matrix[-self.num_inputs:], axis=0)
+        )
+
+        # out
+        return matrix
