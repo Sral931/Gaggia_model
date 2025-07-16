@@ -105,21 +105,20 @@ class Model_Thermocoil(Model):
         # flow matrix #
         ###############
         self._flow_conduction: ndarray = np.zeros_like(self._heat_conduction)
-        #      he1   wl1   tu1   wa1 
-        h_flow: ndarray = np.array([
-            [  0.0,  0.0,  0.0,  0.0],
-            [  0.0,  0.0,  0.0,  0.0],
-            [  0.0,  0.0,  0.0,  0.0],
-            [  0.0,  0.0,  0.0,  1.0]
-        ])
-
-        # put flow mask on off diagonal
-        for i in range(num-1):
-            self._flow_conduction[4*i:4*i+4, 4*(i+1):4*(i+1)+4] = h_flow
-        # put flow to ambient on first water element
-        self._flow_conduction[4*num+1, 3] = 1.0
         
-        self._flow_conduction = self.make_symmetric(self._flow_conduction)
+        # put flow mask on first water element to ambient
+        self._flow_conduction[3, 4*num+1] = 1.0
+        # put flow mask on off diagonal between water elements
+        for i in range(1,num):
+            self._flow_conduction[4*i+3, 4*(i-1)+3] = 1.0        
+        
+        # add diagonal, but correct for inputs
+        self._flow_conduction -= np.diag(
+            np.sum(self._flow_conduction[:, :-self.num_inputs], axis=1)
+        )
+        # cant be symmetric, that screws up energy conservation
+        # self._flow_conduction = self.make_symmetric(self._flow_conduction)
+        return
     
     def jacobi(self, state:ndarray) -> ndarray:
         # build final heat conduction matrix
