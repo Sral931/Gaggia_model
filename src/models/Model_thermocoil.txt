@@ -1,0 +1,88 @@
+# Explanation to rough parameter calculation
+
+# thermocoil block of roughly 380g
+# dimensions about 50mm OD and 65mm height
+# hole with ID 12mm in the middle
+# average density is around or less than 3000 kg/m^3
+# probably made of cast aluminum
+# specific thermal conductivity about 100 W/m/kg
+# specific heat capacity about 900 J/kg/K
+
+##########
+# sensor #
+##########
+# thermal capacity ~ 20e-3 J/K
+# thermal transfer ~ 4.8e-3 W/K
+# equates to about an m4 screw of brass
+# and its metal to metal contact to the boiler
+# worked well in gaggia model
+
+##########
+# heater #
+##########
+# thermal transfer ~ 5 W/K
+# thermal capacity ~ 40 J/K
+# estimated since it worked well on the gaggia model
+# lowered to 1/nth for n discretization cells
+
+###################
+# Thermocoil body #
+###################
+# thermal path from heater to tube
+# about 5mm length of aluminum
+# area as cylinder of height and half diameter
+# height 60mm and 40mm diameter
+# thermal transfer ~ 300 W/K
+# lowered to 1/nth for n discretization cells
+##############################
+# thermal path from slice to slice along length
+# total length 65mm
+# cross section of OD 50 and ID 15
+# thermal transfer ~ 2.75 W/kg
+# increased by factor of n for n discretization cells
+# half for each of the wall cells in a slice
+##############################
+# thermal capacity of aluminum
+# weight about 330g
+# equals ~ 297 J/K
+# lowered to 1/nth for n discretization cells
+####################
+# loss to ambient
+# surface loss about 5W/m^2/kg
+# cylidner body with height 65mm and OD 50mm
+# loss to ambient ~ 0,05 to 0,07 W/K
+# lowered to 1/nth for n discretization cells
+
+########
+# tube #
+########
+# holds about 4g of water
+# ID of 2mm
+# equals a length of ~ 1.25m
+# Area of ~ 0,007854 mm^2
+###############################
+# film coefficient on tube wall
+# Reynolds number
+# Re = rho*c*d / mu
+# rho ... density
+#   c ... average fluid velocity
+#   d ... diameter
+#  mu ... dynamic viscosity
+################
+# Prandtl number
+# Pr = c_p*mu/lambda
+#    c_p ... specific heat capacity
+# lambda ... specific heat conduction
+################
+# Nusselt number
+# laminar:
+# Nu = 0.15 * Re^0.33 * Pr^0.43
+# turbulent:
+# Nu = 0.021* Re^0.80 * Pr^0.43
+#############################
+# Convection film coefficient
+# alpha = Nu * lambda/d
+# lambda/d ~ 350 W / m^2 / K
+# lowered to 1/nth for n discretization cells
+
+
