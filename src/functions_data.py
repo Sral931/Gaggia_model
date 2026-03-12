@@ -398,5 +398,40 @@ def load_dataset(index_dataset: int32, temp_off:float64 = 7.0) -> (ndarray, str)
         correct_temperature(dataset, temp_off) # temp reading above set
         return dataset, 'heat up pressurized'
     
+    # heat up profile Thermoblock
+    if (index_dataset == 12):
+        dataset, title = load_file(path_data_folder+'Heat boiler shot.json')
+        # corr certain values
+        correct_temperature(dataset, temp_off) # temp reading above set
+        return dataset, 'heat up ascaso'
+    
+    # cool down profile Thermoblock
+    if (index_dataset == 13):
+        dataset, title = load_file(path_data_folder+'Cool boiler shot.json')
+        # corr certain values
+        correct_temperature(dataset, temp_off) # temp reading above set
+        return dataset, 'cool down ascaso'
+    
+    # heat up profile Thermoblock
+    if (index_dataset == 14):
+        dataset, title = load_file(path_data_folder+'Heat boiler shot 2.json')
+        # corr certain values
+        correct_temperature(dataset, temp_off) # temp reading above set
+        return dataset, 'heat up astron'
+    
+    # cool down profile Thermoblock
+    if (index_dataset == 15):
+        dataset, title = load_file(path_data_folder+'Flow boiler shot.json')
+        # corr certain values
+        correct_temperature(dataset, temp_off) # temp reading above set
+        return dataset, 'flow astron'
+    
+    # cool down profile Thermoblock
+    if (index_dataset == 16):
+        dataset, title = load_file(path_data_folder+'Cool boiler shot 2.json')
+        # corr certain values
+        correct_temperature(dataset, temp_off) # temp reading above set
+        return dataset, 'cool down astron'
+    
     raise NotImplementedError(f'Dataset index {index_dataset:2d} is not defined !')
 

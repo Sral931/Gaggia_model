@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from models.Model_TomBrazier import *
 from models.Model_Sral import *
 from models.Model_Thermocoil import *
+from models.Model_Ascaso import *
 from solvers.Solver_Newton import *
 from solvers.Solver_RK4 import *
 from solvers.Solver_Copper import *
@@ -21,26 +22,27 @@ from numpy import int32, float64, ndarray
 # DEFINES #
 ###########
 temp_ambient:float64 = 20.0
-FULL_HEATER_POWER: float64 = 1400
+FULL_HEATER_POWER: float64 = 1000
 
 # timescale
 time_min:float64 = 0.0
-time_max:float64 = 28.0
-time_points:int32 = 400*int(time_max)
+time_max:float64 = 60.0
+time_points:int32 = int(time_max)*400
 timescale:ndarray = np.linspace(time_min, time_max, time_points)
 time_step:ndarray = np.zeros(time_points)
 time_step[1:] = timescale[1:] - timescale[:-1]
 
 # profile
-temp_start:float64 = 93.0 #temp_ambient
-FLOW_SET:ndarray = 4.0
+temp_start:float64 = 93 #93.0 #temp_ambient
+FLOW_SET:ndarray = 2.5
 temp_set:ndarray = 93.0
 
 heater:ndarray = np.zeros(time_points)
 
 solver = Solver_RK4()
 # solver = Solver_Newton()
-model = Model_Thermocoil(4)
+# model = Model_Thermocoil(4)
+model = Model_Ascaso(4)
 # print (np.where(model._heat_conduction > 0, 1, 0))
 # print (model._heat_conduction)
 solver.model = model
@@ -50,7 +52,7 @@ init_state[model.STATE_INDEXES['ambient']-1] = temp_ambient
 solver.initialize(
     0.0,
     init_state,
-    np.array([1400.0, 0.0])
+    np.array([1000.0, 0.0])
 )
 
 ########
@@ -59,7 +61,8 @@ solver.initialize(
 brew_delta: float64 = 0.0
 prev_temp: float64 = solver.state[model.STATE_INDEXES['sensor']]
 for index in range(1,time_points):
-    flow = FLOW_SET if timescale[index] < 10.0 else 2.0
+    # flow = FLOW_SET if timescale[index] < 10.0 else 4.0
+    flow = FLOW_SET
     # brew_delta: float64 = 0.0*(500.0 + temp_set - temp_ambient)*flow/100.0
     brew_delta = -(solver.state[model.STATE_INDEXES['sensor']] - prev_temp)/time_step[index]*3
     prev_temp = solver.state[model.STATE_INDEXES['sensor']]
